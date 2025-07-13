@@ -7,7 +7,7 @@ Chat PDF Express is a web application that allows users to interact with PDF doc
 - Upload multiple PDF files.
 - Extract text from uploaded PDFs.
 - Chat interface for asking questions related to the PDF content.
-- Utilizes Google Generative AI for generating responses based on the PDF text.
+- Utilizes AI for generating responses based on the PDF text.
 
 ## Project Structure
 
@@ -57,9 +57,9 @@ chat-pdf-express
    npm install
    ```
 
-3. Create a `.env` file in the root directory and add your Google API key:
+3. Create a `.env` file in the root directory and add your API key:
    ```
-   GOOGLE_API_KEY=your_google_api_key
+   API_KEY=your_api_key
    ```
 
 4. Start the application:
@@ -78,7 +78,3 @@ chat-pdf-express
 ## Contributing
 
 Contributions are welcome! Please feel free to submit a pull request or open an issue for any enhancements or bug fixes.
-
-## License
-
-This project is licensed under the MIT License.
