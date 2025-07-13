@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat with PDF</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <%- include('partials/header') %>
+    
+    <div class="container">
+        <h1>💬 Chat with PDF</h1>
+        
+        <!-- Navigation -->
+        <div class="navigation">
+            <a href="/" class="nav-btn">🏠 Back to Upload</a>
+        </div>
+
+        <!-- Error Messages -->
+        <% if (typeof error !== 'undefined' && error) { %>
+            <div class="alert alert-error">
+                <h3>❌ Error</h3>
+                <p><%= error %></p>
+                <% if (typeof details !== 'undefined' && details) { %>
+                    <p><small>Details: <%= details %></small></p>
+                <% } %>
+            </div>
+        <% } %>
+
+        <!-- Chat Response -->
+        <% if (typeof answer !== 'undefined' && answer) { %>
+            <div class="chat-response">
+                <div class="question-section">
+                    <h3>❓ Your Question:</h3>
+                    <div class="question-bubble">
+                        <%= question %>
+                    </div>
+                </div>
+
+                <div class="answer-section">
+                    <h3>🤖 AI Response:</h3>
+                    <div class="answer-bubble">
+                        <%- answer %>
+                    </div>
+                </div>
+
+                <% if (typeof context_used !== 'undefined' && context_used && context_used.length > 0) { %>
+                    <div class="context-section">
+                        <h3>📖 Sources Used (<%=total_chunks_used%> chunks):</h3>
+                        <div class="context-list">
+                            <% context_used.forEach((context, index) => { %>
+                                <div class="context-item">
+                                    <div class="context-header">
+                                        <span class="context-number">Chunk <%= index + 1 %></span>
+                                        <span class="similarity-score">Similarity: <%= context.similarity %></span>
+                                        <span class="source-name">Source: <%= context.source %></span>
+                                    </div>
+                                    <div class="context-text">
+                                        <%= context.text %>
+                                    </div>
+                                </div>
+                            <% }); %>
+                        </div>
+                    </div>
+                <% } %>
+            </div>
+        <% } %>
+
+        <!-- Search Results -->
+        <% if (typeof searchResults !== 'undefined' && searchResults) { %>
+            <div class="search-results">
+                <h3>🔍 Search Results for: "<%= searchQuery %>"</h3>
+                <p class="results-count">Found <%= total_results %> results</p>
+                
+                <div class="results-list">
+                    <% searchResults.forEach((result, index) => { %>
+                        <div class="result-item">
+                            <div class="result-header">
+                                <span class="result-number">Result <%= index + 1 %></span>
+                                <span class="similarity-score">Similarity: <%= result.similarity %></span>
+                                <% if (result.metadata && result.metadata.source) { %>
+                                    <span class="source-name">Source: <%= result.metadata.source %></span>
+                                <% } %>
+                            </div>
+                            <div class="result-text">
+                                <%= result.text %>
+                            </div>
+                        </div>
+                    <% }); %>
+                </div>
+            </div>
+        <% } %>
+
+        <!-- Vector Store Info -->
+        <% if (typeof vectorStoreInfo !== 'undefined' && vectorStoreInfo) { %>
+            <div class="vector-store-info">
+                <h3>📊 Vector Store Information</h3>
+                <div class="info-content">
+                    <pre><%= JSON.stringify(vectorStoreInfo, null, 2) %></pre>
+                </div>
+            </div>
+        <% } %>
+
+        <!-- New Question Form -->
+        <div class="new-question-section">
+            <h3>💭 Ask Another Question</h3>
+            <form action="/chat" method="POST" class="chat-form">
+                <div class="question-input-wrapper">
+                    <input type="text" name="question" placeholder="Ask another question about the PDF..." required>
+                    <button type="submit" class="ask-btn">❓ Ask Question</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <%- include('partials/footer') %>
+
+    <script src="/js/main.js"></script>
+</body>
+</html>

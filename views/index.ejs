@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat with PDF</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <%- include('partials/header') %>
+    
+    <div class="container">
+        <h1>Chat with Your PDF</h1>
+        
+        <!-- Status Messages -->
+        <% if (typeof error !== 'undefined' && error) { %>
+            <div class="alert alert-error">
+                <h3>❌ Error</h3>
+                <p><%= error %></p>
+                <% if (typeof details !== 'undefined' && details) { %>
+                    <p><small>Details: <%= details %></small></p>
+                <% } %>
+            </div>
+        <% } %>
+
+        <% if (typeof success !== 'undefined' && success && typeof message !== 'undefined') { %>
+            <div class="alert alert-success">
+                <h3>✅ Success</h3>
+                <p><%= message %></p>
+                
+                <% if (typeof filename !== 'undefined' && filename) { %>
+                    <div class="pdf-info">
+                        <h4>📄 File Information:</h4>
+                        <ul>
+                            <li><strong>Filename:</strong> <%= filename %></li>
+                            <% if (typeof chunks_created !== 'undefined' && chunks_created) { %>
+                                <li><strong>Text Chunks Created:</strong> <%= chunks_created %></li>
+                            <% } %>
+                            <% if (typeof pdf_info !== 'undefined' && pdf_info) { %>
+                                <% if (pdf_info.pages) { %>
+                                    <li><strong>Pages:</strong> <%= pdf_info.pages %></li>
+                                <% } %>
+                                <% if (pdf_info.title && pdf_info.title !== filename) { %>
+                                    <li><strong>Title:</strong> <%= pdf_info.title %></li>
+                                <% } %>
+                                <% if (pdf_info.author && pdf_info.author !== 'unknown') { %>
+                                    <li><strong>Author:</strong> <%= pdf_info.author %></li>
+                                <% } %>
+                                <% if (pdf_info.subject && pdf_info.subject !== 'unknown') { %>
+                                    <li><strong>Subject:</strong> <%= pdf_info.subject %></li>
+                                <% } %>
+                            <% } %>
+                        </ul>
+                        <p class="success-note">✨ Your PDF has been processed and is ready for questions!</p>
+                    </div>
+                <% } %>
+            </div>
+        <% } %>
+
+        <!-- PDF Upload Form -->
+        <div class="upload-section">
+            <h2>📁 Upload PDF Document</h2>
+            <form id="pdf-upload-form" action="/pdf/upload" method="POST" enctype="multipart/form-data">
+                <div class="file-input-wrapper">
+                    <input type="file" name="pdf" accept=".pdf" required id="pdf-input">
+                    <label for="pdf-input" class="file-input-label">
+                        📎 Choose PDF File
+                    </label>
+                </div>
+                <button type="submit" class="upload-btn">🚀 Upload and Process PDF</button>
+            </form>
+        </div>
+        
+        <!-- Chat Section -->
+        <% if (typeof success !== 'undefined' && success) { %>
+            <div class="chat-section">
+                <h2>💬 Ask Questions</h2>
+                <form action="/chat" method="POST" class="chat-form">
+                    <div class="question-input-wrapper">
+                        <input type="text" name="question" id="user-question" 
+                               placeholder="Ask a question about the PDF..." required>
+                        <button type="submit" class="ask-btn">❓ Ask Question</button>
+                    </div>
+                </form>
+            </div>
+        <% } %>
+    </div>
+
+    <%- include('partials/footer') %>
+
+    <script src="/js/main.js"></script>
+</body>
+</html>
