@@ -3,6 +3,26 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
+// Simple token estimation (rough approximation: 1 token ≈ 4 characters)
+const estimateTokens = (text) => {
+    return Math.ceil(text.length / 4);
+};
+
+// Truncate context to fit within token limits
+const truncateContext = (context, question, maxContextTokens = 4000) => {
+    const systemPromptTokens = 200; // Approximate tokens for system prompt
+    const questionTokens = estimateTokens(question);
+    const availableTokens = maxContextTokens - systemPromptTokens - questionTokens - 100; // Buffer
+    
+    if (estimateTokens(context) <= availableTokens) {
+        return context;
+    }
+    
+    // Truncate context to fit available tokens
+    const maxChars = availableTokens * 4; // Convert back to characters
+    return context.substring(0, maxChars) + "\n\n[Context truncated due to length...]";
+};
+
 export const generateResponse = async (question, context) => {
     const GROQ_API_KEY = process.env.GROQ_API_KEY;
     
@@ -13,10 +33,17 @@ export const generateResponse = async (question, context) => {
     try {
         console.log('🤖 Generating response using Groq API...');
         
+        // Truncate context if it's too long
+        const truncatedContext = truncateContext(context, question);
+        const contextTokens = estimateTokens(truncatedContext);
+        const questionTokens = estimateTokens(question);
+        
+        console.log(`📊 Token usage - Context: ${contextTokens}, Question: ${questionTokens}`);
+        
         const response = await axios.post(
             'https://api.groq.com/openai/v1/chat/completions',
             {
-                model: 'llama3-8b-8192',
+                model: 'llama3-8b-8192', // Keeping original model with better token management
                 messages: [
                     {
                         role: 'system',
@@ -39,7 +66,7 @@ export const generateResponse = async (question, context) => {
                         role: 'user',
                         content: `Context from PDF document:
                         
-                        ${context}
+                        ${truncatedContext}
                         
                         Question: ${question}
                         
@@ -73,6 +100,8 @@ export const generateResponse = async (question, context) => {
             throw new Error('Invalid API key. Please check your GROQ_API_KEY.');
         } else if (error.response?.status === 429) {
             throw new Error('Rate limit exceeded. Please try again later.');
+        } else if (error.response?.status === 413 || error.response?.data?.error?.code === 'rate_limit_exceeded') {
+            throw new Error('Request too large. The document content is too long. Please try asking a more specific question.');
         } else if (error.code === 'ECONNABORTED') {
             throw new Error('Request timeout. Please try again.');
         } else {

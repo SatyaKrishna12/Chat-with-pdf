@@ -10,53 +10,74 @@
     <%- include('partials/header') %>
     
     <div class="container">
-        <h1>💬 Chat with PDF</h1>
-        
-        <!-- Navigation -->
-        <div class="navigation">
-            <a href="/" class="nav-btn">🏠 Back to Upload</a>
+        <div class="chat-header">
+            <h1><i class="fas fa-robot"></i> Chat with Your PDF</h1>
+            <a href="/" class="back-btn">
+                <i class="fas fa-arrow-left"></i> Upload New PDF
+            </a>
         </div>
 
+        
         <!-- Error Messages -->
         <% if (typeof error !== 'undefined' && error) { %>
             <div class="alert alert-error">
-                <h3>❌ Error</h3>
+                <h3><i class="fas fa-exclamation-triangle"></i> Error</h3>
                 <p><%= error %></p>
                 <% if (typeof details !== 'undefined' && details) { %>
-                    <p><small>Details: <%= details %></small></p>
+                    <p><small><strong>Details:</strong> <%= details %></small></p>
                 <% } %>
             </div>
         <% } %>
 
         <!-- Chat Response -->
         <% if (typeof answer !== 'undefined' && answer) { %>
-            <div class="chat-response">
-                <div class="question-section">
-                    <h3>❓ Your Question:</h3>
-                    <div class="question-bubble">
-                        <%= question %>
+            <div class="conversation-container">
+                <div class="conversation">
+                    <div class="message-pair">
+                        <!-- User Question -->
+                        <div class="message message-user">
+                            <div class="message-header">
+                                <i class="fas fa-user"></i>
+                                <span class="message-label">You asked</span>
+                                <span class="message-time">Now</span>
+                            </div>
+                            <div class="message-content">
+                                <%= question %>
+                            </div>
+                        </div>
+                        
+                        <!-- AI Answer -->
+                        <div class="message message-ai">
+                            <div class="message-header">
+                                <i class="fas fa-robot"></i>
+                                <span class="message-label">AI Response</span>
+                            </div>
+                            <div class="message-content">
+                                <%- answer %>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <div class="answer-section">
-                    <h3>🤖 AI Response:</h3>
-                    <div class="answer-bubble">
-                        <%- answer %>
-                    </div>
-                </div>
-
+                <!-- Context Sources -->
                 <% if (typeof context_used !== 'undefined' && context_used && context_used.length > 0) { %>
-                    <div class="context-section">
-                        <h3>📖 Sources Used (<%=total_chunks_used%> chunks):</h3>
-                        <div class="context-list">
+                    <div class="sources-section">
+                        <h3><i class="fas fa-book-open"></i> Sources Used (<%= total_chunks_used %> chunks)</h3>
+                        <div class="sources-container">
                             <% context_used.forEach((context, index) => { %>
-                                <div class="context-item">
-                                    <div class="context-header">
-                                        <span class="context-number">Chunk <%= index + 1 %></span>
-                                        <span class="similarity-score">Similarity: <%= context.similarity %></span>
-                                        <span class="source-name">Source: <%= context.source %></span>
+                                <div class="source-item">
+                                    <div class="source-header">
+                                        <span class="source-number"><i class="fas fa-puzzle-piece"></i> Chunk <%= index + 1 %></span>
+                                        <span class="similarity-score">
+                                            <i class="fas fa-chart-line"></i> <%= (context.similarity * 100).toFixed(1) %>%
+                                        </span>
+                                        <% if (context.source) { %>
+                                            <span class="source-name">
+                                                <i class="fas fa-file-alt"></i> <%= context.source %>
+                                            </span>
+                                        <% } %>
                                     </div>
-                                    <div class="context-text">
+                                    <div class="source-text">
                                         <%= context.text %>
                                     </div>
                                 </div>
@@ -70,17 +91,21 @@
         <!-- Search Results -->
         <% if (typeof searchResults !== 'undefined' && searchResults) { %>
             <div class="search-results">
-                <h3>🔍 Search Results for: "<%= searchQuery %>"</h3>
-                <p class="results-count">Found <%= total_results %> results</p>
+                <h3><i class="fas fa-search"></i> Search Results for: "<%= searchQuery %>"</h3>
+                <p class="results-count"><i class="fas fa-info-circle"></i> Found <%= total_results %> results</p>
                 
                 <div class="results-list">
                     <% searchResults.forEach((result, index) => { %>
                         <div class="result-item">
                             <div class="result-header">
-                                <span class="result-number">Result <%= index + 1 %></span>
-                                <span class="similarity-score">Similarity: <%= result.similarity %></span>
+                                <span class="result-number"><i class="fas fa-hashtag"></i> Result <%= index + 1 %></span>
+                                <span class="similarity-score">
+                                    <i class="fas fa-chart-line"></i> <%= (result.similarity * 100).toFixed(1) %>%
+                                </span>
                                 <% if (result.metadata && result.metadata.source) { %>
-                                    <span class="source-name">Source: <%= result.metadata.source %></span>
+                                    <span class="source-name">
+                                        <i class="fas fa-file-alt"></i> <%= result.metadata.source %>
+                                    </span>
                                 <% } %>
                             </div>
                             <div class="result-text">
@@ -95,27 +120,63 @@
         <!-- Vector Store Info -->
         <% if (typeof vectorStoreInfo !== 'undefined' && vectorStoreInfo) { %>
             <div class="vector-store-info">
-                <h3>📊 Vector Store Information</h3>
+                <h3><i class="fas fa-database"></i> Vector Store Information</h3>
                 <div class="info-content">
                     <pre><%= JSON.stringify(vectorStoreInfo, null, 2) %></pre>
                 </div>
             </div>
         <% } %>
 
-        <!-- New Question Form -->
-        <div class="new-question-section">
-            <h3>💭 Ask Another Question</h3>
+        <!-- Ask Another Question Form -->
+        <div class="chat-section">
+            <h2><i class="fas fa-comments"></i> Ask Another Question</h2>
             <form action="/chat" method="POST" class="chat-form">
                 <div class="question-input-wrapper">
-                    <input type="text" name="question" placeholder="Ask another question about the PDF..." required>
-                    <button type="submit" class="ask-btn">❓ Ask Question</button>
+                    <input type="text" name="question" id="user-question" 
+                           placeholder="Ask another question about the PDF..." required>
+                    <button type="submit" class="ask-btn">
+                        <i class="fas fa-paper-plane"></i> Ask Question
+                    </button>
                 </div>
             </form>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="quick-actions">
+            <h3><i class="fas fa-magic"></i> Quick Actions</h3>
+            <div class="action-buttons">
+                <button class="action-btn" onclick="fillQuestion('Summarize the main points of this document')">
+                    <i class="fas fa-file-text"></i> Summarize Document
+                </button>
+                <button class="action-btn" onclick="fillQuestion('What are the key takeaways from this PDF?')">
+                    <i class="fas fa-key"></i> Key Takeaways
+                </button>
+                <button class="action-btn" onclick="fillQuestion('Explain the main topics covered in this document')">
+                    <i class="fas fa-lightbulb"></i> Main Topics
+                </button>
+                <button class="action-btn" onclick="fillQuestion('List the important facts and figures mentioned')">
+                    <i class="fas fa-chart-bar"></i> Facts & Figures
+                </button>
+            </div>
         </div>
     </div>
 
     <%- include('partials/footer') %>
 
     <script src="/js/main.js"></script>
+    <script>
+        function fillQuestion(question) {
+            document.getElementById('user-question').value = question;
+            document.getElementById('user-question').focus();
+        }
+
+        // Auto-scroll to latest message
+        document.addEventListener('DOMContentLoaded', function() {
+            const conversation = document.querySelector('.conversation');
+            if (conversation) {
+                conversation.scrollTop = conversation.scrollHeight;
+            }
+        });
+    </script>
 </body>
 </html>

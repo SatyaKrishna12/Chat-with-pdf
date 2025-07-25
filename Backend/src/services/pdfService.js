@@ -8,8 +8,11 @@ export const getPdfText = async (pdfDocs) => {
     let allText = "";
     
     try {
+        console.log(`📚 Starting to process ${pdfDocs.length} PDF document(s)...`);
+        
         for (const pdfDoc of pdfDocs) {
             console.log(`📖 Reading PDF: ${pdfDoc.originalname}`);
+            console.log(`📏 File size: ${(pdfDoc.size / 1024 / 1024).toFixed(2)} MB`);
             
             let pdfBuffer;
             
@@ -24,8 +27,11 @@ export const getPdfText = async (pdfDocs) => {
                 throw new Error('Invalid PDF file format');
             }
             
+            console.log('🔍 Parsing PDF content...');
             // Parse PDF - use default import
             const data = await pdf(pdfBuffer);
+            
+            console.log(`📊 PDF contains ${data.numpages} pages`);
             
             // Extract text with better formatting
             const text = data.text
@@ -36,8 +42,10 @@ export const getPdfText = async (pdfDocs) => {
             allText += text + '\n\n';
             
             console.log(`✅ Extracted ${text.length} characters from ${pdfDoc.originalname}`);
+            console.log(`📄 Total pages processed: ${data.numpages}`);
         }
         
+        console.log(`🎉 PDF processing complete! Total text length: ${allText.length} characters`);
         return allText.trim();
         
     } catch (error) {

@@ -10,48 +10,48 @@
     <%- include('partials/header') %>
     
     <div class="container">
-        <h1>Chat with Your PDF</h1>
+        <h1><i class="fas fa-robot"></i> Chat with Your PDF</h1>
         
         <!-- Status Messages -->
         <% if (typeof error !== 'undefined' && error) { %>
             <div class="alert alert-error">
-                <h3>❌ Error</h3>
+                <h3><i class="fas fa-exclamation-triangle"></i> Error</h3>
                 <p><%= error %></p>
                 <% if (typeof details !== 'undefined' && details) { %>
-                    <p><small>Details: <%= details %></small></p>
+                    <p><small><strong>Details:</strong> <%= details %></small></p>
                 <% } %>
             </div>
         <% } %>
 
         <% if (typeof success !== 'undefined' && success && typeof message !== 'undefined') { %>
             <div class="alert alert-success">
-                <h3>✅ Success</h3>
+                <h3><i class="fas fa-check-circle"></i> Success</h3>
                 <p><%= message %></p>
                 
                 <% if (typeof filename !== 'undefined' && filename) { %>
                     <div class="pdf-info">
-                        <h4>📄 File Information:</h4>
+                        <h4><i class="fas fa-info-circle"></i> File Information:</h4>
                         <ul>
-                            <li><strong>Filename:</strong> <%= filename %></li>
+                            <li><i class="fas fa-file-alt"></i> <strong>Filename:</strong> <%= filename %></li>
                             <% if (typeof chunks_created !== 'undefined' && chunks_created) { %>
-                                <li><strong>Text Chunks Created:</strong> <%= chunks_created %></li>
+                                <li><i class="fas fa-puzzle-piece"></i> <strong>Text Chunks Created:</strong> <%= chunks_created %></li>
                             <% } %>
                             <% if (typeof pdf_info !== 'undefined' && pdf_info) { %>
                                 <% if (pdf_info.pages) { %>
-                                    <li><strong>Pages:</strong> <%= pdf_info.pages %></li>
+                                    <li><i class="fas fa-file-pdf"></i> <strong>Pages:</strong> <%= pdf_info.pages %></li>
                                 <% } %>
                                 <% if (pdf_info.title && pdf_info.title !== filename) { %>
-                                    <li><strong>Title:</strong> <%= pdf_info.title %></li>
+                                    <li><i class="fas fa-heading"></i> <strong>Title:</strong> <%= pdf_info.title %></li>
                                 <% } %>
                                 <% if (pdf_info.author && pdf_info.author !== 'unknown') { %>
-                                    <li><strong>Author:</strong> <%= pdf_info.author %></li>
+                                    <li><i class="fas fa-user"></i> <strong>Author:</strong> <%= pdf_info.author %></li>
                                 <% } %>
                                 <% if (pdf_info.subject && pdf_info.subject !== 'unknown') { %>
-                                    <li><strong>Subject:</strong> <%= pdf_info.subject %></li>
+                                    <li><i class="fas fa-tags"></i> <strong>Subject:</strong> <%= pdf_info.subject %></li>
                                 <% } %>
                             <% } %>
                         </ul>
-                        <p class="success-note">✨ Your PDF has been processed and is ready for questions!</p>
+                        <p class="success-note"><i class="fas fa-sparkles"></i> Your PDF has been processed and is ready for questions!</p>
                     </div>
                 <% } %>
             </div>
@@ -59,31 +59,98 @@
 
         <!-- PDF Upload Form -->
         <div class="upload-section">
-            <h2>📁 Upload PDF Document</h2>
+            <h2><i class="fas fa-cloud-upload-alt"></i> Upload PDF Document</h2>
+            <p style="color: var(--dark-gray); margin-bottom: 1.5rem;">Upload your PDF document to start chatting with it using AI</p>
             <form id="pdf-upload-form" action="/pdf/upload" method="POST" enctype="multipart/form-data">
                 <div class="file-input-wrapper">
                     <input type="file" name="pdf" accept=".pdf" required id="pdf-input">
                     <label for="pdf-input" class="file-input-label">
-                        📎 Choose PDF File
+                        <i class="fas fa-file-pdf"></i> Choose PDF File
                     </label>
                 </div>
-                <button type="submit" class="upload-btn">🚀 Upload and Process PDF</button>
+                <button type="submit" class="upload-btn">
+                    <i class="fas fa-rocket"></i> Upload and Process PDF
+                </button>
             </form>
         </div>
         
         <!-- Chat Section -->
         <% if (typeof success !== 'undefined' && success) { %>
             <div class="chat-section">
-                <h2>💬 Ask Questions</h2>
+                <h2><i class="fas fa-comments"></i> Ask Questions</h2>
+                <p style="color: var(--dark-gray); margin-bottom: 1.5rem;">Your PDF is ready! Ask any question about its content</p>
                 <form action="/chat" method="POST" class="chat-form">
                     <div class="question-input-wrapper">
                         <input type="text" name="question" id="user-question" 
                                placeholder="Ask a question about the PDF..." required>
-                        <button type="submit" class="ask-btn">❓ Ask Question</button>
+                        <button type="submit" class="ask-btn">
+                            <i class="fas fa-paper-plane"></i> Ask Question
+                        </button>
                     </div>
                 </form>
             </div>
         <% } %>
+
+        <!-- Features Section -->
+        <% if (typeof success === 'undefined' || !success) { %>
+            <div class="features-section" style="margin-top: 3rem;">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin-top: 2rem;">
+                    <div class="feature-card">
+                        <div class="feature-icon"><i class="fas fa-brain"></i></div>
+                        <h3>AI-Powered Analysis</h3>
+                        <p>Advanced AI understands your PDF content and provides accurate, contextual answers to your questions.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon"><i class="fas fa-search"></i></div>
+                        <h3>Smart Search</h3>
+                        <p>Quickly find relevant information across your entire document with intelligent semantic search.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon"><i class="fas fa-bolt"></i></div>
+                        <h3>Lightning Fast</h3>
+                        <p>Get instant responses to your questions with our optimized processing pipeline.</p>
+                    </div>
+                </div>
+            </div>
+        <% } %>
+        
+        <!-- Progress Overlay -->
+        <div id="progress-overlay" class="progress-overlay" style="display: none;">
+            <div class="progress-modal">
+                <div class="progress-content">
+                    <div class="progress-spinner"></div>
+                    <h3><i class="fas fa-cog fa-spin"></i> Processing Your PDF</h3>
+                    <div id="progress-message" class="progress-message">
+                        📄 Starting PDF analysis...
+                    </div>
+                    <div id="file-info" class="file-info" style="display: none;">
+                        <small id="file-details"></small>
+                    </div>
+                    <div class="progress-steps">
+                        <div class="step" id="step-1">
+                            <i class="fas fa-file-pdf"></i> Reading PDF
+                        </div>
+                        <div class="step" id="step-2">
+                            <i class="fas fa-cut"></i> Creating chunks
+                        </div>
+                        <div class="step" id="step-3">
+                            <i class="fas fa-brain"></i> Generating embeddings
+                        </div>
+                        <div class="step" id="step-4">
+                            <i class="fas fa-database"></i> Uploading to database
+                        </div>
+                    </div>
+                    <div class="progress-bar-container">
+                        <div id="progress-bar" class="progress-bar"></div>
+                        <span id="progress-percentage" class="progress-percentage">0%</span>
+                    </div>
+                    <p class="progress-note">
+                        <i class="fas fa-info-circle"></i> 
+                        Processing time depends on document size and complexity. Please don't close this window.
+                    </p>
+                </div>
+            </div>
+        </div>
     </div>
 
     <%- include('partials/footer') %>
