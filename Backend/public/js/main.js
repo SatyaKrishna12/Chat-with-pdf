@@ -67,16 +67,8 @@ document.addEventListener('DOMContentLoaded', function() {
             uploadBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing PDF...';
             uploadBtn.disabled = true;
             
-            // Increased timeout based on file size (minimum 2 minutes, extra 30s per MB)
-            const timeoutMS = Math.max(120000, 120000 + (fileSizeMB * 30000));
-            setTimeout(() => {
-                if (uploadBtn.disabled) {
-                    hideProgressOverlay();
-                    uploadBtn.innerHTML = '<i class="fas fa-rocket"></i> Upload and Process PDF';
-                    uploadBtn.disabled = false;
-                    alert(`Processing timeout after ${Math.round(timeoutMS/1000)} seconds. Please try again with a smaller file or check your connection.`);
-                }
-            }, timeoutMS);
+            // No timeout - let the server processing complete naturally
+            // The progress overlay will be hidden when the server responds
         });
     }
 
