@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', function() {
         fileInput.addEventListener('change', function(e) {
             const file = e.target.files[0];
             if (file) {
-                const fileName = file.name;
+                let fileName = file.name;
                 if(fileName.length >30){
                     fileName = fileName.substring(0,27)+'...';
                 }
