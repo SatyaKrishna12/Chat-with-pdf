@@ -24,6 +24,9 @@ document.addEventListener('DOMContentLoaded', function() {
             const file = e.target.files[0];
             if (file) {
                 const fileName = file.name;
+                if(fileName.length >30){
+                    fileName = fileName.substring(0,27)+'...';
+                }
                 const fileSize = (file.size / 1024 / 1024).toFixed(2); // MB
                 fileLabel.innerHTML = `<i class="fas fa-file-pdf"></i> ${fileName} (${fileSize} MB)`;
                 fileLabel.classList.add('file-selected');
