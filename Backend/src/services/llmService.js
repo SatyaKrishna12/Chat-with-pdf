@@ -9,7 +9,8 @@ const estimateTokens = (text) => {
 };
 
 // Truncate context to fit within token limits
-const truncateContext = (context, question, maxContextTokens = 4000) => {
+    const MODEL_CONTEXT_WINDOW = 131072; // For models with large context windows
+    const truncateContext = (context, question, maxContextTokens = MODEL_CONTEXT_WINDOW) => {
     const systemPromptTokens = 200; // Approximate tokens for system prompt
     const questionTokens = estimateTokens(question);
     const availableTokens = maxContextTokens - systemPromptTokens - questionTokens - 100; // Buffer
@@ -33,8 +34,10 @@ export const generateResponse = async (question, context) => {
     try {
         console.log('🤖 Generating response using Groq API...');
         
+        console.log(context);
         // Truncate context if it's too long
         const truncatedContext = truncateContext(context, question);
+        console.log('🔍 Truncated context:', truncatedContext);
         const contextTokens = estimateTokens(truncatedContext);
         const questionTokens = estimateTokens(question);
         
@@ -43,7 +46,7 @@ export const generateResponse = async (question, context) => {
         const response = await axios.post(
             'https://api.groq.com/openai/v1/chat/completions',
             {
-                model: 'llama3-8b-8192', // Keeping original model with better token management
+                model: 'llama-3.3-70b-versatile', // Keeping original model with better token management
                 messages: [
                     {
                         role: 'system',

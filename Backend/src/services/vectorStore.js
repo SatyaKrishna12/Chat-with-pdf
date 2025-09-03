@@ -223,7 +223,7 @@ export const loadVectorStore = async () => {
     }
 };
 
-export const searchVectorStore = async (query, topK = 5) => {
+export const searchVectorStore = async (query, topK = 7) => {
     try {
         const index = await loadVectorStore();
         
@@ -238,7 +238,8 @@ export const searchVectorStore = async (query, topK = 5) => {
             includeMetadata: true,
             includeValues: false
         });
-        
+        console.log('✅ Search completed successfully');
+        console.log('🔍 Search results:', searchResults);
         // Format results to match ChromaDB format for compatibility
         const documents = searchResults.matches.map(match => match.metadata.text);
         const metadatas = searchResults.matches.map(match => {

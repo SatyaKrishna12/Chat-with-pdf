@@ -154,8 +154,7 @@ export const getVectorStoreStatus = async (req, res) => {
 
 export const searchDocuments = async (req, res) => {
     try {
-        const { query, topK = 5 } = req.body;
-        
+        const { query, topK = 7 } = req.body;
         if (!query) {
             // return res.status(400).json({ error: "Search query is required." });
             return res.render('chat', { 
