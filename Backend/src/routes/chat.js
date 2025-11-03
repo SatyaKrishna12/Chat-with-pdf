@@ -3,11 +3,11 @@ import { handleChat, getVectorStoreStatus } from '../controllers/chatController.
 
 const router = express.Router();
 
-// Handle chat questions via POST
+// Handle chat questions
 router.post('/', handleChat);
 router.get('/status', getVectorStoreStatus);
 
-// Render chat page via GET
+// Render chat page
 router.get('/', (req, res) => {
     res.render('chat');
 });

@@ -49,39 +49,18 @@ header .container {
     padding: 0 2rem;
 }
 
-header h1 {
+header .title {
+    color: var(--white);
     font-size: 1.5rem;
     font-weight: 700;
     display: flex;
     align-items: center;
     gap: 0.5rem;
+    margin: 0;
 }
 
-header h1 i {
+header .title i {
     color: var(--accent-blue);
-}
-
-nav {
-    display: flex;
-    gap: 1rem;
-}
-
-.nav-link {
-    color: var(--white);
-    text-decoration: none;
-    padding: 0.5rem 1rem;
-    border-radius: var(--border-radius);
-    background: rgba(255, 255, 255, 0.1);
-    transition: var(--transition);
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-weight: 500;
-}
-
-.nav-link:hover {
-    background: rgba(255, 255, 255, 0.2);
-    transform: translateY(-2px);
 }
 
 /* Container */

@@ -2,7 +2,8 @@ import {
     searchVectorStore, 
     getVectorStoreInfo 
 } from '../services/vectorStore.js';
-import { generateResponse } from '../services/llmService.js'; 
+import { generateResponse } from '../services/llmService.js';
+import { SEARCH_CONFIG } from '../config/searchConfig.js'; 
 
 // Helper function to format LLM response
 const formatLLMResponse = (response) => {
@@ -57,7 +58,7 @@ export const handleChat = async (req, res) => {
             
             try {
                 // Search for relevant chunks
-                const searchResults = await searchVectorStore(userQuestion, 3);
+                const searchResults = await searchVectorStore(userQuestion, SEARCH_CONFIG.DEFAULT_TOP_K);
                 
                 if (!searchResults.documents || searchResults.documents.length === 0) {
                     // return res.status(404).json({ 
@@ -65,16 +66,29 @@ export const handleChat = async (req, res) => {
                     // });
                     return res.render('chat', { 
                         error: "No relevant information found. Please upload a PDF first.",
-                        question: userQuestion 
+                        question: userQuestion,
+                        context_used: [],
                     });
                 }
 
                 // Prepare context from search results
-                const context = searchResults.documents.map((doc, index) => ({
+                const allContext = searchResults.documents.map((doc, index) => ({
                     text: doc,
                     similarity: 1 - searchResults.distances[index], // Convert distance to similarity
                     metadata: searchResults.metadatas[index]
                 }));
+
+                // Filter out low-relevance chunks
+                const context = allContext.filter(item => item.similarity >= SEARCH_CONFIG.SIMILARITY_THRESHOLD);
+
+                // Check if we have any relevant context after filtering
+                if (context.length === 0) {
+                    return res.render('chat', { 
+                        error: "No relevant information found in the PDF for your question. Please try rephrasing or ask something related to the document content.",
+                        question: userQuestion,
+                        context_used: [],
+                    });
+                }
 
                 // Generate response using LLM
                 const contextText = context.map(item => item.text).join('\n\n');
@@ -154,7 +168,7 @@ export const getVectorStoreStatus = async (req, res) => {
 
 export const searchDocuments = async (req, res) => {
     try {
-        const { query, topK = 7 } = req.body;
+        const { query, topK = SEARCH_CONFIG.DEFAULT_TOP_K } = req.body;
         if (!query) {
             // return res.status(400).json({ error: "Search query is required." });
             return res.render('chat', { 
@@ -164,11 +178,22 @@ export const searchDocuments = async (req, res) => {
 
         const searchResults = await searchVectorStore(query, topK);
         
-        const results = searchResults.documents.map((doc, index) => ({
+        const allResults = searchResults.documents.map((doc, index) => ({
             text: doc,
             similarity: (1 - searchResults.distances[index]).toFixed(3),
             metadata: searchResults.metadatas[index]
         }));
+
+        // Filter by similarity threshold
+        const results = allResults.filter(item => parseFloat(item.similarity) >= SEARCH_CONFIG.SIMILARITY_THRESHOLD);
+
+        if (results.length === 0) {
+            return res.render('chat', {
+                searchQuery: query,
+                error: "No relevant documents found for your search query.",
+                total_results: 0
+            });
+        }
 
         // res.status(200).json({
         //     query,
